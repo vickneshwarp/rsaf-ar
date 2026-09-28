@@ -2,55 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>RSAF AR</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>RSAF AR - Camera Test</title>
   <style>
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: Arial, sans-serif;
-      background: #081522;
-      color: white;
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,sans-serif;color:#fff}
+    #camera{width:100%;height:100%;object-fit:cover;background:#000}
+    #panel{
+      position:fixed;z-index:10;left:16px;right:16px;bottom:20px;
+      padding:18px;background:rgba(8,21,34,.88);border-radius:16px;text-align:center
     }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+    h2{margin:0 0 8px}
+    p{margin:8px 0;color:#d8e4ec}
+    button{
+      margin-top:8px;padding:14px 24px;border:0;border-radius:12px;
+      font-size:17px;font-weight:700
     }
-    .card {
-      width: min(520px, 100%);
-      padding: 32px 24px;
-      text-align: center;
-      background: #12283a;
-      border-radius: 20px;
-    }
-    h1 { margin: 0 0 12px; }
-    p { line-height: 1.5; color: #d8e4ec; }
-    button {
-      margin-top: 12px;
-      padding: 14px 26px;
-      border: 0;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    #status {
-      margin-top: 18px;
-      font-weight: 700;
-    }
+    #error{color:#ffb4b4}
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>RSAF AR</h1>
-    <p>Stage 1 installation test</p>
-    <p>If you can see this page, the new RSAF AR website is working.</p>
-    <button onclick="document.getElementById('status').textContent='✓ WEBSITE TEST PASSED'">
-      TEST WEBSITE
-    </button>
-    <div id="status"></div>
-  </main>
+  <video id="camera" autoplay playsinline muted></video>
+
+  <div id="panel">
+    <h2>RSAF AR — Stage 2</h2>
+    <p id="status">Press START CAMERA.</p>
+    <button id="start">START CAMERA</button>
+    <p id="error"></p>
+  </div>
+
+<script>
+const video = document.getElementById('camera');
+const status = document.getElementById('status');
+const error = document.getElementById('error');
+const button = document.getElementById('start');
+
+button.addEventListener('click', async () => {
+  error.textContent = '';
+  status.textContent = 'Requesting camera permission...';
+
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera API is not available in this browser.');
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: false
+    });
+
+    video.srcObject = stream;
+    await video.play();
+
+    status.textContent = '✓ REAR CAMERA WORKING';
+    button.style.display = 'none';
+  } catch (e) {
+    status.textContent = 'CAMERA TEST FAILED';
+    error.textContent = e.name + ': ' + e.message;
+  }
+});
+</script>
 </body>
 </html>
