@@ -8,7 +8,7 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<title>RSAF AR - Stage 5B</title>
+<title>RSAF AR - Stage 5C</title>
 
 <style>
 
@@ -50,19 +50,34 @@ color:#ffb4b4;
 font-size:13px;
 }
 
+#place{
+display:none;
+margin-top:10px;
+padding:14px 22px;
+border:0;
+border-radius:10px;
+font-size:16px;
+font-weight:bold;
+}
+
 </style>
 
 </head>
 
 <body>
 
+
 <div id="info">
 
-<h2>RSAF AR — Stage 5B</h2>
+<h2>RSAF AR — Stage 5C</h2>
 
 <div id="status">
 Starting...
 </div>
+
+<button id="place">
+PLACE AIRCRAFT
+</button>
 
 <div id="error"></div>
 
@@ -80,11 +95,26 @@ import { ARButton } from
 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/ARButton.js';
 
 
+import { GLTFLoader } from
+'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
+
+
 const status =
 document.getElementById('status');
 
 const error =
 document.getElementById('error');
+
+const placeButton =
+document.getElementById('place');
+
+
+/*
+TEMPORARY AIRCRAFT
+*/
+
+const MODEL_URL =
+'https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb';
 
 
 /*
@@ -123,6 +153,21 @@ new THREE.HemisphereLight(
 scene.add(light);
 
 
+const directionalLight =
+new THREE.DirectionalLight(
+0xffffff,
+2
+);
+
+directionalLight.position.set(
+5,
+10,
+5
+);
+
+scene.add(directionalLight);
+
+
 /*
 RENDERER
 */
@@ -135,7 +180,6 @@ antialias:true,
 alpha:true
 
 });
-
 
 renderer.setPixelRatio(
 window.devicePixelRatio
@@ -177,15 +221,11 @@ arButton
 );
 
 
-/*
-BUTTON POSITION
-*/
-
 arButton.style.position=
 'fixed';
 
 arButton.style.bottom=
-'100px';
+'110px';
 
 arButton.style.left=
 '50%';
@@ -225,19 +265,8 @@ color:0x00ff00
 
 );
 
-
-/*
-Lay the ring flat
-*/
-
 reticle.rotation.x=
 -Math.PI/2;
-
-
-/*
-Do not automatically
-update its position
-*/
 
 reticle.matrixAutoUpdate=false;
 
@@ -258,7 +287,73 @@ let localSpace=null;
 
 
 /*
-AR SESSION START
+AIRCRAFT
+*/
+
+let aircraftTemplate=null;
+
+let aircraft=null;
+
+
+/*
+LOAD AIRCRAFT
+*/
+
+const loader =
+new GLTFLoader();
+
+
+status.textContent=
+'Loading aircraft...';
+
+
+loader.load(
+
+MODEL_URL,
+
+function(gltf){
+
+aircraftTemplate=
+gltf.scene;
+
+
+aircraftTemplate.traverse(
+function(object){
+
+if(object.isMesh){
+
+object.castShadow=true;
+
+object.receiveShadow=true;
+
+}
+
+});
+
+
+status.textContent=
+'✓ AIRCRAFT READY — tap START AR.';
+
+},
+
+
+undefined,
+
+
+function(err){
+
+error.textContent=
+'Aircraft failed to load.';
+
+console.error(err);
+
+}
+
+);
+
+
+/*
+AR START
 */
 
 renderer.xr.addEventListener(
@@ -266,7 +361,7 @@ renderer.xr.addEventListener(
 async function(){
 
 status.textContent=
-'AR started — move phone slowly to scan the floor.';
+'AR started — scan the floor.';
 
 
 const session =
@@ -275,30 +370,17 @@ renderer.xr.getSession();
 
 try{
 
-
-/*
-Viewer reference space
-*/
-
 viewerSpace =
 await session.requestReferenceSpace(
 'viewer'
 );
 
 
-/*
-Local reference space
-*/
-
 localSpace =
 await session.requestReferenceSpace(
 'local'
 );
 
-
-/*
-Request hit test
-*/
 
 hitTestSource =
 await session.requestHitTestSource({
@@ -308,8 +390,12 @@ space:viewerSpace
 });
 
 
+placeButton.style.display=
+'inline-block';
+
+
 status.textContent=
-'Move the phone slowly until the green circle appears.';
+'Move phone until green circle appears.';
 
 
 }catch(e){
@@ -324,7 +410,7 @@ e.message;
 
 
 /*
-AR SESSION END
+AR END
 */
 
 renderer.xr.addEventListener(
@@ -339,14 +425,123 @@ localSpace=null;
 
 reticle.visible=false;
 
-status.textContent=
-'AR ended.';
+placeButton.style.display=
+'none';
 
 });
 
 
 /*
-XR RENDER LOOP
+PLACE BUTTON
+*/
+
+placeButton.addEventListener(
+'click',
+function(){
+
+placeAircraft();
+
+});
+
+
+/*
+PLACE AIRCRAFT
+*/
+
+function placeAircraft(){
+
+if(!reticle.visible){
+
+status.textContent=
+'Please find the floor first.';
+
+return;
+
+}
+
+
+if(!aircraftTemplate){
+
+status.textContent=
+'Aircraft is still loading.';
+
+return;
+
+}
+
+
+/*
+Remove previous aircraft
+*/
+
+if(aircraft){
+
+scene.remove(
+aircraft
+);
+
+}
+
+
+/*
+Clone aircraft
+*/
+
+aircraft =
+aircraftTemplate.clone(true);
+
+
+/*
+Place at reticle
+*/
+
+aircraft.position.setFromMatrixPosition(
+reticle.matrix
+);
+
+
+/*
+Temporary size
+
+We will calibrate this later
+to the actual aircraft size.
+*/
+
+aircraft.scale.set(
+1,
+1,
+1
+);
+
+
+/*
+Add aircraft
+*/
+
+scene.add(
+aircraft
+);
+
+
+/*
+Hide reticle
+*/
+
+reticle.visible=false;
+
+
+placeButton.style.display=
+'none';
+
+
+status.textContent=
+'✓ AIRCRAFT PLACED';
+
+}
+
+
+/*
+XR LOOP
 */
 
 renderer.setAnimationLoop(
@@ -357,16 +552,16 @@ frame
 
 if(frame && hitTestSource && localSpace){
 
-const hitTestResults =
+const results =
 frame.getHitTestResults(
 hitTestSource
 );
 
 
-if(hitTestResults.length>0){
+if(results.length>0){
 
 const hit =
-hitTestResults[0];
+results[0];
 
 
 const pose =
@@ -385,8 +580,12 @@ pose.transform.matrix
 );
 
 
+if(!aircraft){
+
 status.textContent=
-'✓ FLOOR DETECTED — green circle ready.';
+'✓ FLOOR DETECTED — tap PLACE AIRCRAFT.';
+
+}
 
 }
 
@@ -394,8 +593,13 @@ status.textContent=
 
 reticle.visible=false;
 
+
+if(!aircraft){
+
 status.textContent=
 'Scanning for floor...';
+
+}
 
 }
 
