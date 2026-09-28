@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <title>RSAF AR - Stage 2</title>
+  <title>RSAF AR - Stage 3</title>
 
   <style>
     *{box-sizing:border-box}
@@ -19,26 +20,6 @@
       color:#fff
     }
 
-    #camera{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      background:#000;
-      z-index:1
-    }
-
-    #model{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      z-index:2;
-      pointer-events:none;
-      display:none;
-    }
-
     #panel{
       position:fixed;
       z-index:10;
@@ -46,7 +27,7 @@
       right:16px;
       bottom:20px;
       padding:18px;
-      background:rgba(8,21,34,.88);
+      background:rgba(8,21,34,.9);
       border-radius:16px;
       text-align:center
     }
@@ -72,108 +53,130 @@
     #error{
       color:#ffb4b4
     }
-
-    #instructions{
-      font-size:14px;
-      color:#b9d0df;
-    }
   </style>
+
+  <script type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+  </script>
+
 </head>
 
 <body>
 
-  <!-- PHONE CAMERA -->
-  <video id="camera" autoplay playsinline muted></video>
-
-  <!-- 3D AIRCRAFT -->
   <model-viewer
-    id="model"
+    id="arModel"
+
     src="https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb"
+
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+
     camera-controls
-    auto-rotate
+
     shadow-intensity="1"
     exposure="1"
-    interaction-prompt="none">
+
+    alt="Temporary aircraft model">
+
   </model-viewer>
 
-  <!-- CONTROL PANEL -->
+
   <div id="panel">
 
-    <h2>RSAF AR — Stage 2</h2>
+    <h2>RSAF AR — Stage 3</h2>
 
     <p id="status">
-      Press START CAMERA.
+      Press START AR.
     </p>
 
     <button id="start">
-      START CAMERA
+      START AR
     </button>
-
-    <p id="instructions">
-      Camera test → aircraft model
-    </p>
 
     <p id="error"></p>
 
   </div>
 
-  <!-- MODEL-VIEWER -->
-  <script
-    type="module"
-    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
-  </script>
 
   <script>
 
-    const video = document.getElementById('camera');
-    const status = document.getElementById('status');
-    const error = document.getElementById('error');
-    const button = document.getElementById('start');
-    const model = document.getElementById('model');
+    const model =
+      document.getElementById('arModel');
 
-    button.addEventListener('click', async () => {
+    const status =
+      document.getElementById('status');
 
-      error.textContent = '';
-      status.textContent = 'Requesting camera permission...';
+    const error =
+      document.getElementById('error');
 
-      try {
+    const button =
+      document.getElementById('start');
 
-        if (!navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia) {
+
+    // Check whether the browser supports AR
+
+    async function checkAR(){
+
+      try{
+
+        if (!navigator.xr){
 
           throw new Error(
-            'Camera API is not available in this browser.'
+            'WebXR is not available in this browser.'
           );
 
         }
 
-        const stream =
-          await navigator.mediaDevices.getUserMedia({
+        const supported =
+          await navigator.xr.isSessionSupported(
+            'immersive-ar'
+          );
 
-            video: {
-              facingMode: { ideal: 'environment' },
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
-            },
+        if(!supported){
 
-            audio: false
-          });
+          throw new Error(
+            'Immersive AR is not supported on this device/browser.'
+          );
 
-        video.srcObject = stream;
-
-        await video.play();
+        }
 
         status.textContent =
-          '✓ REAR CAMERA WORKING — AIRCRAFT LOADING';
+          '✓ AR SUPPORT DETECTED';
 
-        button.style.display = 'none';
+        button.style.display =
+          'block';
 
-        model.style.display = 'block';
-
-      } catch (e) {
+      }catch(e){
 
         status.textContent =
-          'CAMERA TEST FAILED';
+          'AR SUPPORT CHECK FAILED';
+
+        error.textContent =
+          e.message;
+
+      }
+
+    }
+
+
+    button.addEventListener('click', async ()=>{
+
+      error.textContent = '';
+
+      status.textContent =
+        'Opening AR...';
+
+      try{
+
+        await model.activateAR();
+
+        status.textContent =
+          '✓ AR STARTED';
+
+      }catch(e){
+
+        status.textContent =
+          'AR FAILED';
 
         error.textContent =
           e.name + ': ' + e.message;
@@ -182,22 +185,16 @@
 
     });
 
-    model.addEventListener('load', () => {
+
+    model.addEventListener('load', ()=>{
 
       status.textContent =
-        '✓ CAMERA + 3D AIRCRAFT WORKING';
-
-      document.getElementById('instructions').textContent =
-        'Drag the aircraft to rotate • Pinch to zoom';
+        '✓ AIRCRAFT MODEL READY';
 
     });
 
-    model.addEventListener('error', () => {
 
-      error.textContent =
-        'The aircraft model could not be loaded.';
-
-    });
+    checkAR();
 
   </script>
 
