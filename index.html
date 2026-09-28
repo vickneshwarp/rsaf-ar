@@ -8,61 +8,75 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<title>RSAF AR - Stage 5C</title>
+<title>RSAF AR - Stage 5C Fixed</title>
+
+
+<!-- THREE.JS IMPORT MAP -->
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+
 
 <style>
 
 html,body{
-margin:0;
-width:100%;
-height:100%;
-overflow:hidden;
-background:#000;
-font-family:Arial,sans-serif;
-color:white;
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:Arial,sans-serif;
+  color:white;
 }
 
 #info{
-position:fixed;
-z-index:10;
-left:12px;
-right:12px;
-bottom:12px;
-padding:15px;
-border-radius:16px;
-background:rgba(8,21,34,.92);
-text-align:center;
+  position:fixed;
+  z-index:10;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  padding:15px;
+  border-radius:16px;
+  background:rgba(8,21,34,.92);
+  text-align:center;
 }
 
 h2{
-margin:0 0 8px;
-font-size:20px;
+  margin:0 0 8px;
+  font-size:20px;
 }
 
 #status{
-font-size:14px;
-color:#d8e4ec;
+  font-size:14px;
+  color:#d8e4ec;
 }
 
 #error{
-margin-top:8px;
-color:#ffb4b4;
-font-size:13px;
+  margin-top:8px;
+  color:#ffb4b4;
+  font-size:13px;
 }
 
 #place{
-display:none;
-margin-top:10px;
-padding:14px 22px;
-border:0;
-border-radius:10px;
-font-size:16px;
-font-weight:bold;
+  display:none;
+  margin-top:10px;
+  padding:14px 22px;
+  border:0;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
 }
 
 </style>
 
 </head>
+
 
 <body>
 
@@ -72,7 +86,7 @@ font-weight:bold;
 <h2>RSAF AR — Stage 5C</h2>
 
 <div id="status">
-Starting...
+Loading...
 </div>
 
 <button id="place">
@@ -86,18 +100,18 @@ PLACE AIRCRAFT
 
 <script type="module">
 
+import * as THREE from 'three';
 
-import * as THREE from
-'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import { ARButton }
+from 'three/addons/webxr/ARButton.js';
+
+import { GLTFLoader }
+from 'three/addons/loaders/GLTFLoader.js';
 
 
-import { ARButton } from
-'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/ARButton.js';
-
-
-import { GLTFLoader } from
-'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
-
+/*
+HTML
+*/
 
 const status =
 document.getElementById('status');
@@ -110,7 +124,7 @@ document.getElementById('place');
 
 
 /*
-TEMPORARY AIRCRAFT
+TEMPORARY AIRCRAFT MODEL
 */
 
 const MODEL_URL =
@@ -132,40 +146,39 @@ CAMERA
 const camera =
 new THREE.PerspectiveCamera(
 70,
-window.innerWidth /
-window.innerHeight,
+window.innerWidth / window.innerHeight,
 0.01,
 100
 );
 
 
 /*
-LIGHT
+LIGHTING
 */
 
-const light =
+const hemisphere =
 new THREE.HemisphereLight(
 0xffffff,
 0xbbbbff,
 2
 );
 
-scene.add(light);
+scene.add(hemisphere);
 
 
-const directionalLight =
+const directional =
 new THREE.DirectionalLight(
 0xffffff,
 2
 );
 
-directionalLight.position.set(
+directional.position.set(
 5,
 10,
 5
 );
 
-scene.add(directionalLight);
+scene.add(directional);
 
 
 /*
@@ -181,8 +194,9 @@ alpha:true
 
 });
 
+
 renderer.setPixelRatio(
-window.devicePixelRatio
+Math.min(window.devicePixelRatio,2)
 );
 
 renderer.setSize(
@@ -207,11 +221,9 @@ ARButton.createButton(
 renderer,
 
 {
-
 requiredFeatures:[
 'hit-test'
 ]
-
 }
 
 );
@@ -276,7 +288,7 @@ scene.add(reticle);
 
 
 /*
-WEBXR VARIABLES
+WEBXR
 */
 
 let hitTestSource=null;
@@ -299,12 +311,12 @@ let aircraft=null;
 LOAD AIRCRAFT
 */
 
+status.textContent=
+'Loading temporary aircraft...';
+
+
 const loader =
 new GLTFLoader();
-
-
-status.textContent=
-'Loading aircraft...';
 
 
 loader.load(
@@ -313,7 +325,7 @@ MODEL_URL,
 
 function(gltf){
 
-aircraftTemplate=
+aircraftTemplate =
 gltf.scene;
 
 
@@ -337,15 +349,37 @@ status.textContent=
 },
 
 
-undefined,
+function(progress){
+
+if(progress.total){
+
+const percent =
+Math.round(
+(progress.loaded / progress.total) * 100
+);
+
+status.textContent=
+'Loading aircraft... ' +
+percent +
+'%';
+
+}
+
+},
 
 
 function(err){
 
-error.textContent=
-'Aircraft failed to load.';
+status.textContent=
+'AIRCRAFT LOAD FAILED';
 
-console.error(err);
+error.textContent=
+'The temporary aircraft could not be loaded.';
+
+console.error(
+'GLTF ERROR:',
+err
+);
 
 }
 
@@ -353,7 +387,7 @@ console.error(err);
 
 
 /*
-AR START
+AR SESSION START
 */
 
 renderer.xr.addEventListener(
@@ -395,13 +429,13 @@ placeButton.style.display=
 
 
 status.textContent=
-'Move phone until green circle appears.';
+'Move phone until the green circle appears.';
 
 
 }catch(e){
 
 error.textContent=
-'Hit test error: '+
+'Hit-test error: ' +
 e.message;
 
 }
@@ -410,7 +444,7 @@ e.message;
 
 
 /*
-AR END
+AR SESSION END
 */
 
 renderer.xr.addEventListener(
@@ -439,17 +473,6 @@ placeButton.addEventListener(
 'click',
 function(){
 
-placeAircraft();
-
-});
-
-
-/*
-PLACE AIRCRAFT
-*/
-
-function placeAircraft(){
-
 if(!reticle.visible){
 
 status.textContent=
@@ -463,7 +486,7 @@ return;
 if(!aircraftTemplate){
 
 status.textContent=
-'Aircraft is still loading.';
+'Aircraft model is not ready yet.';
 
 return;
 
@@ -471,7 +494,7 @@ return;
 
 
 /*
-Remove previous aircraft
+Remove old aircraft
 */
 
 if(aircraft){
@@ -484,7 +507,7 @@ aircraft
 
 
 /*
-Clone aircraft
+Clone model
 */
 
 aircraft =
@@ -492,7 +515,7 @@ aircraftTemplate.clone(true);
 
 
 /*
-Place at reticle
+Place model
 */
 
 aircraft.position.setFromMatrixPosition(
@@ -501,10 +524,10 @@ reticle.matrix
 
 
 /*
-Temporary size
+Temporary scale
 
-We will calibrate this later
-to the actual aircraft size.
+We will make this
+true life-size later.
 */
 
 aircraft.scale.set(
@@ -515,7 +538,7 @@ aircraft.scale.set(
 
 
 /*
-Add aircraft
+Add to scene
 */
 
 scene.add(
@@ -529,7 +552,6 @@ Hide reticle
 
 reticle.visible=false;
 
-
 placeButton.style.display=
 'none';
 
@@ -537,20 +559,21 @@ placeButton.style.display=
 status.textContent=
 '✓ AIRCRAFT PLACED';
 
-}
+});
 
 
 /*
-XR LOOP
+XR RENDER LOOP
 */
 
 renderer.setAnimationLoop(
-function(
-time,
-frame
-){
+function(time,frame){
 
-if(frame && hitTestSource && localSpace){
+if(
+frame &&
+hitTestSource &&
+localSpace
+){
 
 const results =
 frame.getHitTestResults(
@@ -573,7 +596,6 @@ localSpace
 if(pose){
 
 reticle.visible=true;
-
 
 reticle.matrix.fromArray(
 pose.transform.matrix
@@ -615,7 +637,7 @@ camera
 
 
 /*
-WEBXR CHECK
+CHECK AR
 */
 
 async function checkAR(){
@@ -625,7 +647,7 @@ try{
 if(!navigator.xr){
 
 throw new Error(
-'WebXR unavailable.'
+'WebXR is unavailable.'
 );
 
 }
@@ -640,7 +662,7 @@ await navigator.xr.isSessionSupported(
 if(!supported){
 
 throw new Error(
-'Immersive AR not supported.'
+'Immersive AR is not supported.'
 );
 
 }
@@ -675,7 +697,7 @@ window.addEventListener(
 function(){
 
 camera.aspect=
-window.innerWidth/
+window.innerWidth /
 window.innerHeight;
 
 camera.updateProjectionMatrix();
@@ -687,6 +709,18 @@ window.innerHeight
 
 });
 
+
+/*
+CATCH JAVASCRIPT ERRORS
+*/
+
+window.addEventListener(
+'error',
+function(event){
+
+console.error(event.error);
+
+});
 
 </script>
 
