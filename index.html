@@ -5,10 +5,12 @@
   <meta name="viewport"
         content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <title>RSAF AR - Stage 3</title>
+  <title>RSAF AR - Stage 4</title>
 
   <style>
-    *{box-sizing:border-box}
+    *{
+      box-sizing:border-box
+    }
 
     html,body{
       margin:0;
@@ -20,78 +22,151 @@
       color:#fff
     }
 
+    model-viewer{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      background:transparent
+    }
+
     #panel{
       position:fixed;
-      z-index:10;
-      left:16px;
-      right:16px;
-      bottom:20px;
-      padding:18px;
-      background:rgba(8,21,34,.9);
-      border-radius:16px;
+      z-index:20;
+      left:14px;
+      right:14px;
+      bottom:14px;
+      padding:16px;
+      background:rgba(8,21,34,.92);
+      border-radius:18px;
       text-align:center
     }
 
     h2{
-      margin:0 0 8px
+      margin:0 0 6px;
+      font-size:20px
     }
 
     p{
-      margin:8px 0;
-      color:#d8e4ec
+      margin:7px 0;
+      color:#d8e4ec;
+      font-size:14px
     }
 
     button{
-      margin-top:8px;
-      padding:14px 24px;
+      margin:4px;
+      padding:12px 16px;
       border:0;
-      border-radius:12px;
-      font-size:17px;
+      border-radius:10px;
+      font-size:15px;
       font-weight:700
     }
 
+    #start{
+      font-size:17px;
+      padding:14px 25px
+    }
+
+    #controls{
+      display:none;
+      margin-top:8px
+    }
+
+    #photoMode{
+      display:none;
+      width:100%;
+      margin-top:8px
+    }
+
     #error{
-      color:#ffb4b4
+      color:#ffb4b4;
+      font-size:13px
+    }
+
+    #scaleValue{
+      font-weight:bold
     }
   </style>
 
-  <script type="module"
+  <script
+    type="module"
     src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
   </script>
-
 </head>
 
 <body>
 
   <model-viewer
-    id="arModel"
+    id="aircraft"
 
     src="https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb"
+
+    alt="Temporary aircraft"
 
     ar
     ar-modes="webxr scene-viewer quick-look"
 
+    ar-placement="floor"
+
     camera-controls
 
     shadow-intensity="1"
+    shadow-softness="0.8"
     exposure="1"
 
-    alt="Temporary aircraft model">
+    environment-image="neutral"
 
+    interaction-prompt="none">
   </model-viewer>
 
 
   <div id="panel">
 
-    <h2>RSAF AR — Stage 3</h2>
+    <h2>RSAF AR — Stage 4</h2>
 
     <p id="status">
-      Press START AR.
+      Checking AR support...
     </p>
 
     <button id="start">
       START AR
     </button>
+
+    <div id="controls">
+
+      <button id="rotateLeft">
+        ↶ ROTATE
+      </button>
+
+      <button id="rotateRight">
+        ROTATE ↷
+      </button>
+
+      <br>
+
+      <button id="smaller">
+        − SMALLER
+      </button>
+
+      <span id="scaleValue">
+        100%
+      </span>
+
+      <button id="larger">
+        LARGER +
+      </button>
+
+      <br>
+
+      <button id="reset">
+        RESET
+      </button>
+
+      <button id="photoMode">
+        📸 PHOTO MODE
+      </button>
+
+    </div>
 
     <p id="error"></p>
 
@@ -100,8 +175,8 @@
 
   <script>
 
-    const model =
-      document.getElementById('arModel');
+    const aircraft =
+      document.getElementById('aircraft');
 
     const status =
       document.getElementById('status');
@@ -109,20 +184,54 @@
     const error =
       document.getElementById('error');
 
-    const button =
+    const start =
       document.getElementById('start');
 
+    const controls =
+      document.getElementById('controls');
 
-    // Check whether the browser supports AR
+    const panel =
+      document.getElementById('panel');
+
+    const scaleValue =
+      document.getElementById('scaleValue');
+
+    const rotateLeft =
+      document.getElementById('rotateLeft');
+
+    const rotateRight =
+      document.getElementById('rotateRight');
+
+    const smaller =
+      document.getElementById('smaller');
+
+    const larger =
+      document.getElementById('larger');
+
+    const reset =
+      document.getElementById('reset');
+
+    const photoMode =
+      document.getElementById('photoMode');
+
+
+    let scale = 1.0;
+
+    let rotation = 0;
+
+
+    /*
+      Check AR support
+    */
 
     async function checkAR(){
 
       try{
 
-        if (!navigator.xr){
+        if(!navigator.xr){
 
           throw new Error(
-            'WebXR is not available in this browser.'
+            'WebXR is not available.'
           );
 
         }
@@ -135,16 +244,13 @@
         if(!supported){
 
           throw new Error(
-            'Immersive AR is not supported on this device/browser.'
+            'Immersive AR is not supported.'
           );
 
         }
 
         status.textContent =
-          '✓ AR SUPPORT DETECTED';
-
-        button.style.display =
-          'block';
+          '✓ AR READY';
 
       }catch(e){
 
@@ -159,7 +265,11 @@
     }
 
 
-    button.addEventListener('click', async ()=>{
+    /*
+      Start AR
+    */
+
+    start.addEventListener('click', async ()=>{
 
       error.textContent = '';
 
@@ -168,10 +278,19 @@
 
       try{
 
-        await model.activateAR();
+        await aircraft.activateAR();
 
         status.textContent =
-          '✓ AR STARTED';
+          '✓ AIRCRAFT PLACED';
+
+        start.style.display =
+          'none';
+
+        controls.style.display =
+          'block';
+
+        photoMode.style.display =
+          'block';
 
       }catch(e){
 
@@ -186,10 +305,153 @@
     });
 
 
-    model.addEventListener('load', ()=>{
+    /*
+      Rotate left
+    */
+
+    rotateLeft.addEventListener('click', ()=>{
+
+      rotation -= 15;
+
+      aircraft.orientation =
+        `0deg ${rotation}deg 0deg`;
+
+    });
+
+
+    /*
+      Rotate right
+    */
+
+    rotateRight.addEventListener('click', ()=>{
+
+      rotation += 15;
+
+      aircraft.orientation =
+        `0deg ${rotation}deg 0deg`;
+
+    });
+
+
+    /*
+      Make smaller
+    */
+
+    smaller.addEventListener('click', ()=>{
+
+      scale -= 0.1;
+
+      if(scale < 0.2){
+        scale = 0.2;
+      }
+
+      updateScale();
+
+    });
+
+
+    /*
+      Make larger
+    */
+
+    larger.addEventListener('click', ()=>{
+
+      scale += 0.1;
+
+      if(scale > 3){
+        scale = 3;
+      }
+
+      updateScale();
+
+    });
+
+
+    /*
+      Apply scale
+    */
+
+    function updateScale(){
+
+      const percent =
+        Math.round(scale * 100);
+
+      scaleValue.textContent =
+        percent + '%';
+
+      aircraft.scale =
+        `${scale} ${scale} ${scale}`;
+
+    }
+
+
+    /*
+      Reset
+    */
+
+    reset.addEventListener('click', ()=>{
+
+      scale = 1.0;
+
+      rotation = 0;
+
+      updateScale();
+
+      aircraft.orientation =
+        '0deg 0deg 0deg';
+
+      status.textContent =
+        '✓ RESET — READY';
+
+    });
+
+
+    /*
+      Photo mode
+    */
+
+    photoMode.addEventListener('click', ()=>{
+
+      if(panel.style.display === 'none'){
+
+        panel.style.display =
+          'block';
+
+        photoMode.textContent =
+          '📸 PHOTO MODE';
+
+      }else{
+
+        panel.style.display =
+          'none';
+
+      }
+
+    });
+
+
+    /*
+      Aircraft loaded
+    */
+
+    aircraft.addEventListener('load', ()=>{
+
+      updateScale();
 
       status.textContent =
         '✓ AIRCRAFT MODEL READY';
+
+    });
+
+
+    /*
+      Aircraft loading error
+    */
+
+    aircraft.addEventListener('error', ()=>{
+
+      error.textContent =
+        'Aircraft model could not be loaded.';
 
     });
 
