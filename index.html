@@ -3,421 +3,488 @@
 
 <head>
 
-  <meta charset="utf-8">
+<meta charset="utf-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <title>RSAF AR - Stage 5A Test</title>
+<title>RSAF AR - Stage 5B</title>
 
-  <style>
+<style>
 
-    html,
-    body {
+html,body{
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:#000;
+font-family:Arial,sans-serif;
+color:white;
+}
 
-      margin: 0;
+#info{
+position:fixed;
+z-index:10;
+left:12px;
+right:12px;
+bottom:12px;
+padding:15px;
+border-radius:16px;
+background:rgba(8,21,34,.92);
+text-align:center;
+}
 
-      width: 100%;
-      height: 100%;
+h2{
+margin:0 0 8px;
+font-size:20px;
+}
 
-      overflow: hidden;
+#status{
+font-size:14px;
+color:#d8e4ec;
+}
 
-      background: #000;
+#error{
+margin-top:8px;
+color:#ffb4b4;
+font-size:13px;
+}
 
-      font-family: Arial, sans-serif;
-
-      color: white;
-
-    }
-
-    #info {
-
-      position: fixed;
-
-      z-index: 10;
-
-      left: 12px;
-      right: 12px;
-
-      bottom: 12px;
-
-      padding: 15px;
-
-      border-radius: 16px;
-
-      background: rgba(8,21,34,.92);
-
-      text-align: center;
-
-    }
-
-    h2 {
-
-      margin: 0 0 8px;
-
-      font-size: 20px;
-
-    }
-
-    #status {
-
-      font-size: 14px;
-
-      color: #d8e4ec;
-
-    }
-
-    #error {
-
-      margin-top: 8px;
-
-      color: #ffb4b4;
-
-      font-size: 13px;
-
-    }
-
-    button {
-
-      padding: 14px 22px;
-
-      border: 0;
-
-      border-radius: 10px;
-
-      font-size: 17px;
-
-      font-weight: bold;
-
-    }
-
-  </style>
+</style>
 
 </head>
 
-
 <body>
 
+<div id="info">
 
-  <div id="info">
+<h2>RSAF AR — Stage 5B</h2>
 
-    <h2>
+<div id="status">
+Starting...
+</div>
 
-      RSAF AR — Stage 5A
+<div id="error"></div>
 
-    </h2>
+</div>
 
-    <div id="status">
 
-      Loading AR test...
+<script type="module">
 
-    </div>
 
-    <div id="error"></div>
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 
-  </div>
 
+import { ARButton } from
+'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/ARButton.js';
 
-  <script type="module">
 
+const status =
+document.getElementById('status');
 
-    import * as THREE from
-      'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const error =
+document.getElementById('error');
 
 
-    import { ARButton } from
-      'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/ARButton.js';
+/*
+SCENE
+*/
 
+const scene =
+new THREE.Scene();
 
-    const status =
-      document.getElementById('status');
 
+/*
+CAMERA
+*/
 
-    const error =
-      document.getElementById('error');
+const camera =
+new THREE.PerspectiveCamera(
+70,
+window.innerWidth /
+window.innerHeight,
+0.01,
+100
+);
 
 
-    /*
-      Scene
-    */
+/*
+LIGHT
+*/
 
-    const scene =
-      new THREE.Scene();
+const light =
+new THREE.HemisphereLight(
+0xffffff,
+0xbbbbff,
+2
+);
 
+scene.add(light);
 
-    /*
-      Camera
-    */
 
-    const camera =
-      new THREE.PerspectiveCamera(
-        70,
-        window.innerWidth /
-        window.innerHeight,
-        0.01,
-        100
-      );
+/*
+RENDERER
+*/
 
+const renderer =
+new THREE.WebGLRenderer({
 
-    /*
-      Light
-    */
+antialias:true,
 
-    const light =
-      new THREE.HemisphereLight(
-        0xffffff,
-        0xbbbbff,
-        2
-      );
+alpha:true
 
+});
 
-    scene.add(light);
 
+renderer.setPixelRatio(
+window.devicePixelRatio
+);
 
-    /*
-      Renderer
-    */
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
 
-    const renderer =
-      new THREE.WebGLRenderer({
+renderer.xr.enabled=true;
 
-        antialias: true,
+document.body.appendChild(
+renderer.domElement
+);
 
-        alpha: true
 
-      });
+/*
+AR BUTTON
+*/
 
+const arButton =
+ARButton.createButton(
 
-    renderer.setPixelRatio(
-      window.devicePixelRatio
-    );
+renderer,
 
+{
 
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    );
+requiredFeatures:[
+'hit-test'
+]
 
+}
 
-    renderer.xr.enabled = true;
+);
 
+document.body.appendChild(
+arButton
+);
 
-    document.body.appendChild(
-      renderer.domElement
-    );
 
+/*
+BUTTON POSITION
+*/
 
-    /*
-      Official Three.js AR button
-    */
+arButton.style.position=
+'fixed';
 
-    const arButton =
-      ARButton.createButton(
+arButton.style.bottom=
+'100px';
 
-        renderer,
+arButton.style.left=
+'50%';
 
-        {
+arButton.style.transform=
+'translateX(-50%)';
 
-          requiredFeatures: [
-            'hit-test'
-          ]
+arButton.style.width=
+'220px';
 
-        }
+arButton.style.height=
+'55px';
 
-      );
+arButton.style.fontSize=
+'18px';
 
+arButton.style.fontWeight=
+'bold';
 
-    document.body.appendChild(
-      arButton
-    );
 
+/*
+RETICLE
+*/
 
-    /*
-      Button appearance
-    */
+const reticle =
+new THREE.Mesh(
 
-    arButton.style.position =
-      'fixed';
+new THREE.RingGeometry(
+0.12,
+0.18,
+32
+),
 
-    arButton.style.bottom =
-      '100px';
+new THREE.MeshBasicMaterial({
+color:0x00ff00
+})
 
-    arButton.style.left =
-      '50%';
+);
 
-    arButton.style.transform =
-      'translateX(-50%)';
 
-    arButton.style.width =
-      '220px';
+/*
+Lay the ring flat
+*/
 
-    arButton.style.height =
-      '55px';
+reticle.rotation.x=
+-Math.PI/2;
 
-    arButton.style.fontSize =
-      '18px';
 
-    arButton.style.fontWeight =
-      'bold';
+/*
+Do not automatically
+update its position
+*/
 
+reticle.matrixAutoUpdate=false;
 
-    /*
-      Check WebXR
-    */
+reticle.visible=false;
 
-    async function checkAR(){
+scene.add(reticle);
 
-      try{
 
-        if(!navigator.xr){
+/*
+WEBXR VARIABLES
+*/
 
-          throw new Error(
-            'navigator.xr is not available.'
-          );
+let hitTestSource=null;
 
-        }
+let viewerSpace=null;
 
+let localSpace=null;
 
-        const supported =
-          await navigator.xr.isSessionSupported(
-            'immersive-ar'
-          );
 
+/*
+AR SESSION START
+*/
 
-        if(!supported){
+renderer.xr.addEventListener(
+'sessionstart',
+async function(){
 
-          throw new Error(
-            'immersive-ar is not supported.'
-          );
+status.textContent=
+'AR started — move phone slowly to scan the floor.';
 
-        }
 
+const session =
+renderer.xr.getSession();
 
-        status.textContent =
-          '✓ WebXR AR detected. Tap START AR.';
 
+try{
 
-      }catch(e){
 
-        status.textContent =
-          'AR CHECK FAILED';
+/*
+Viewer reference space
+*/
 
-        error.textContent =
-          e.message;
+viewerSpace =
+await session.requestReferenceSpace(
+'viewer'
+);
 
-      }
 
-    }
+/*
+Local reference space
+*/
 
+localSpace =
+await session.requestReferenceSpace(
+'local'
+);
 
-    /*
-      Detect AR session
-    */
 
-    renderer.xr.addEventListener(
-      'sessionstart',
-      function(){
+/*
+Request hit test
+*/
 
-        status.textContent =
-          '✓ AR SESSION STARTED';
+hitTestSource =
+await session.requestHitTestSource({
 
-        error.textContent =
-          '';
+space:viewerSpace
 
-      }
-    );
+});
 
 
-    /*
-      Detect AR session ending
-    */
+status.textContent=
+'Move the phone slowly until the green circle appears.';
 
-    renderer.xr.addEventListener(
-      'sessionend',
-      function(){
 
-        status.textContent =
-          'AR session ended.';
+}catch(e){
 
-      }
-    );
+error.textContent=
+'Hit test error: '+
+e.message;
 
+}
 
-    /*
-      Catch errors
-    */
+});
 
-    window.addEventListener(
-      'unhandledrejection',
-      function(event){
 
-        error.textContent =
-          'ERROR: ' +
-          event.reason;
+/*
+AR SESSION END
+*/
 
-        console.error(
-          event.reason
-        );
+renderer.xr.addEventListener(
+'sessionend',
+function(){
 
-      }
-    );
+hitTestSource=null;
 
+viewerSpace=null;
 
-    /*
-      Animation loop
-    */
+localSpace=null;
 
-    renderer.setAnimationLoop(
-      function(){
+reticle.visible=false;
 
-        renderer.render(
-          scene,
-          camera
-        );
+status.textContent=
+'AR ended.';
 
-      }
-    );
+});
 
 
-    /*
-      Resize
-    */
+/*
+XR RENDER LOOP
+*/
 
-    window.addEventListener(
-      'resize',
-      function(){
+renderer.setAnimationLoop(
+function(
+time,
+frame
+){
 
-        if(
-          renderer.xr.isPresenting
-        ){
+if(frame && hitTestSource && localSpace){
 
-          return;
+const hitTestResults =
+frame.getHitTestResults(
+hitTestSource
+);
 
-        }
 
+if(hitTestResults.length>0){
 
-        camera.aspect =
-          window.innerWidth /
-          window.innerHeight;
+const hit =
+hitTestResults[0];
 
 
-        camera.updateProjectionMatrix();
+const pose =
+hit.getPose(
+localSpace
+);
 
 
-        renderer.setSize(
-          window.innerWidth,
-          window.innerHeight
-        );
+if(pose){
 
-      }
-    );
+reticle.visible=true;
 
 
-    checkAR();
+reticle.matrix.fromArray(
+pose.transform.matrix
+);
 
-  </script>
 
+status.textContent=
+'✓ FLOOR DETECTED — green circle ready.';
+
+}
+
+}else{
+
+reticle.visible=false;
+
+status.textContent=
+'Scanning for floor...';
+
+}
+
+}
+
+
+renderer.render(
+scene,
+camera
+);
+
+});
+
+
+/*
+WEBXR CHECK
+*/
+
+async function checkAR(){
+
+try{
+
+if(!navigator.xr){
+
+throw new Error(
+'WebXR unavailable.'
+);
+
+}
+
+
+const supported =
+await navigator.xr.isSessionSupported(
+'immersive-ar'
+);
+
+
+if(!supported){
+
+throw new Error(
+'Immersive AR not supported.'
+);
+
+}
+
+
+status.textContent=
+'✓ AR READY — tap START AR.';
+
+
+}catch(e){
+
+status.textContent=
+'AR CHECK FAILED';
+
+error.textContent=
+e.message;
+
+}
+
+}
+
+
+checkAR();
+
+
+/*
+RESIZE
+*/
+
+window.addEventListener(
+'resize',
+function(){
+
+camera.aspect=
+window.innerWidth/
+window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+});
+
+
+</script>
 
 </body>
 
