@@ -9,172 +9,87 @@
     name="viewport"
     content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <title>RSAF AR - Stage 5</title>
+  <title>RSAF AR - Stage 5A Test</title>
 
   <style>
 
-    * {
-      box-sizing: border-box;
-    }
-
     html,
     body {
+
       margin: 0;
+
       width: 100%;
       height: 100%;
+
       overflow: hidden;
+
       background: #000;
+
       font-family: Arial, sans-serif;
-      color: white;
-    }
-
-    canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    #menu {
-
-      position: fixed;
-
-      z-index: 20;
-
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
-
-      padding: 14px;
-
-      background: rgba(8, 21, 34, 0.94);
-
-      border-radius: 18px;
-
-      text-align: center;
-    }
-
-    h2 {
-
-      margin: 0 0 6px;
-
-      font-size: 20px;
-    }
-
-    #status {
-
-      margin: 6px 0 10px;
-
-      font-size: 14px;
-
-      color: #d8e4ec;
-    }
-
-    button {
-
-      margin: 4px;
-
-      padding: 11px 14px;
-
-      border: 0;
-
-      border-radius: 10px;
-
-      font-size: 14px;
-
-      font-weight: bold;
-
-      background: white;
-
-      color: #071522;
-    }
-
-    button:disabled {
-
-      opacity: 0.4;
-    }
-
-    #start {
-
-      font-size: 17px;
-
-      padding: 14px 24px;
-    }
-
-    #controls {
-
-      display: none;
-    }
-
-    #aircraftButtons {
-
-      margin-bottom: 5px;
-    }
-
-    #selected {
-
-      margin: 5px 0;
-
-      font-size: 13px;
-
-      color: #8fd3ff;
-    }
-
-    #photoExit {
-
-      display: none;
-
-      position: fixed;
-
-      z-index: 30;
-
-      top: 14px;
-
-      right: 14px;
-
-      padding: 10px 14px;
-
-      border-radius: 10px;
-
-      background: rgba(8,21,34,.9);
 
       color: white;
 
-      border: 1px solid rgba(255,255,255,.3);
     }
 
-    #error {
-
-      color: #ffb4b4;
-
-      font-size: 13px;
-
-      margin-top: 6px;
-    }
-
-    #reticleInfo {
-
-      display: none;
+    #info {
 
       position: fixed;
 
       z-index: 10;
 
-      top: 14px;
+      left: 12px;
+      right: 12px;
 
-      left: 50%;
+      bottom: 12px;
 
-      transform: translateX(-50%);
+      padding: 15px;
 
-      padding: 9px 14px;
+      border-radius: 16px;
 
-      border-radius: 12px;
+      background: rgba(8,21,34,.92);
 
-      background: rgba(8,21,34,.85);
+      text-align: center;
+
+    }
+
+    h2 {
+
+      margin: 0 0 8px;
+
+      font-size: 20px;
+
+    }
+
+    #status {
+
+      font-size: 14px;
+
+      color: #d8e4ec;
+
+    }
+
+    #error {
+
+      margin-top: 8px;
+
+      color: #ffb4b4;
 
       font-size: 13px;
 
-      text-align: center;
+    }
+
+    button {
+
+      padding: 14px 22px;
+
+      border: 0;
+
+      border-radius: 10px;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
     }
 
   </style>
@@ -185,130 +100,19 @@
 <body>
 
 
-  <div id="reticleInfo">
-
-    Move the phone until the floor is detected.<br>
-    Then tap the screen to place the aircraft.
-
-  </div>
-
-
-  <button id="photoExit">
-
-    EXIT PHOTO MODE
-
-  </button>
-
-
-  <div id="menu">
+  <div id="info">
 
     <h2>
 
-      RSAF AR — Stage 5
+      RSAF AR — Stage 5A
 
     </h2>
 
-
     <div id="status">
 
-      Checking AR support...
+      Loading AR test...
 
     </div>
-
-
-    <button id="start">
-
-      START AR
-
-    </button>
-
-
-    <div id="controls">
-
-
-      <div id="aircraftButtons">
-
-        <button id="aircraft1">
-
-          PLACE AIRCRAFT 1
-
-        </button>
-
-        <button id="aircraft2">
-
-          PLACE AIRCRAFT 2
-
-        </button>
-
-        <button id="aircraft3">
-
-          PLACE AIRCRAFT 3
-
-        </button>
-
-      </div>
-
-
-      <div id="selected">
-
-        Selected: Aircraft 1
-
-      </div>
-
-
-      <div>
-
-        <button id="rotateLeft">
-
-          ↶ ROTATE
-
-        </button>
-
-        <button id="rotateRight">
-
-          ROTATE ↷
-
-        </button>
-
-      </div>
-
-
-      <div>
-
-        <button id="smaller">
-
-          − SMALLER
-
-        </button>
-
-        <button id="larger">
-
-          LARGER +
-
-        </button>
-
-      </div>
-
-
-      <div>
-
-        <button id="reset">
-
-          RESET SELECTED
-
-        </button>
-
-        <button id="photoMode">
-
-          📸 PHOTO MODE
-
-        </button>
-
-      </div>
-
-
-    </div>
-
 
     <div id="error"></div>
 
@@ -322,106 +126,71 @@
       'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 
 
-    import { GLTFLoader } from
-      'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
+    import { ARButton } from
+      'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/webxr/ARButton.js';
 
-
-    /*
-      Temporary aircraft model
-
-      Later we will replace this with
-      the actual RSAF aircraft models.
-    */
-
-    const MODEL_URL =
-      'https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb';
-
-
-    /*
-      HTML elements
-    */
-
-    const start =
-      document.getElementById('start');
-
-    const menu =
-      document.getElementById('menu');
-
-    const controls =
-      document.getElementById('controls');
 
     const status =
       document.getElementById('status');
 
+
     const error =
       document.getElementById('error');
 
-    const selectedText =
-      document.getElementById('selected');
-
-    const reticleInfo =
-      document.getElementById('reticleInfo');
-
-    const photoExit =
-      document.getElementById('photoExit');
-
-
-    const aircraft1 =
-      document.getElementById('aircraft1');
-
-    const aircraft2 =
-      document.getElementById('aircraft2');
-
-    const aircraft3 =
-      document.getElementById('aircraft3');
-
-
-    const rotateLeft =
-      document.getElementById('rotateLeft');
-
-    const rotateRight =
-      document.getElementById('rotateRight');
-
-    const smaller =
-      document.getElementById('smaller');
-
-    const larger =
-      document.getElementById('larger');
-
-    const reset =
-      document.getElementById('reset');
-
-    const photoMode =
-      document.getElementById('photoMode');
-
 
     /*
-      THREE.JS
+      Scene
     */
 
     const scene =
       new THREE.Scene();
 
 
+    /*
+      Camera
+    */
+
     const camera =
       new THREE.PerspectiveCamera(
         70,
-        window.innerWidth / window.innerHeight,
+        window.innerWidth /
+        window.innerHeight,
         0.01,
         100
       );
 
 
+    /*
+      Light
+    */
+
+    const light =
+      new THREE.HemisphereLight(
+        0xffffff,
+        0xbbbbff,
+        2
+      );
+
+
+    scene.add(light);
+
+
+    /*
+      Renderer
+    */
+
     const renderer =
       new THREE.WebGLRenderer({
+
         antialias: true,
-        alpha: true,
-        preserveDrawingBuffer: true
+
+        alpha: true
+
       });
 
 
     renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, 2)
+      window.devicePixelRatio
     );
 
 
@@ -431,12 +200,7 @@
     );
 
 
-    renderer.outputColorSpace =
-      THREE.SRGBColorSpace;
-
-
-    renderer.shadowMap.enabled =
-      true;
+    renderer.xr.enabled = true;
 
 
     document.body.appendChild(
@@ -445,186 +209,61 @@
 
 
     /*
-      Lights
+      Official Three.js AR button
     */
 
-    const ambientLight =
-      new THREE.HemisphereLight(
-        0xffffff,
-        0x444444,
-        3
-      );
+    const arButton =
+      ARButton.createButton(
 
+        renderer,
 
-    scene.add(
-      ambientLight
-    );
+        {
 
+          requiredFeatures: [
+            'hit-test'
+          ]
 
-    const directionalLight =
-      new THREE.DirectionalLight(
-        0xffffff,
-        3
-      );
-
-
-    directionalLight.position.set(
-      5,
-      10,
-      5
-    );
-
-
-    directionalLight.castShadow =
-      true;
-
-
-    scene.add(
-      directionalLight
-    );
-
-
-    /*
-      AR variables
-    */
-
-    let xrSession = null;
-
-    let referenceSpace = null;
-
-    let viewerSpace = null;
-
-    let hitTestSource = null;
-
-
-    /*
-      Reticle
-
-      Shows where the aircraft
-      will be placed.
-    */
-
-    const reticle =
-      new THREE.Mesh(
-
-        new THREE.RingGeometry(
-          0.15,
-          0.2,
-          32
-        ),
-
-        new THREE.MeshBasicMaterial({
-          color: 0xffffff
-        })
+        }
 
       );
 
 
-    reticle.rotation.x =
-      -Math.PI / 2;
-
-
-    reticle.matrixAutoUpdate =
-      false;
-
-
-    reticle.visible =
-      false;
-
-
-    scene.add(
-      reticle
+    document.body.appendChild(
+      arButton
     );
 
 
     /*
-      Aircraft storage
+      Button appearance
     */
 
-    const aircraftObjects = [
-      null,
-      null,
-      null
-    ];
+    arButton.style.position =
+      'fixed';
 
+    arButton.style.bottom =
+      '100px';
 
-    let selectedAircraft =
-      0;
+    arButton.style.left =
+      '50%';
 
+    arButton.style.transform =
+      'translateX(-50%)';
 
-    let placingAircraft =
-      0;
+    arButton.style.width =
+      '220px';
 
+    arButton.style.height =
+      '55px';
 
-    let aircraftTemplate =
-      null;
+    arButton.style.fontSize =
+      '18px';
+
+    arButton.style.fontWeight =
+      'bold';
 
 
     /*
-      Load aircraft
-    */
-
-    const loader =
-      new GLTFLoader();
-
-
-    status.textContent =
-      'Loading temporary aircraft...';
-
-
-    loader.load(
-
-      MODEL_URL,
-
-      function(gltf) {
-
-        aircraftTemplate =
-          gltf.scene;
-
-
-        /*
-          Prepare model
-        */
-
-        aircraftTemplate.traverse(
-          function(object) {
-
-            if(object.isMesh){
-
-              object.castShadow =
-                true;
-
-              object.receiveShadow =
-                true;
-
-            }
-
-          }
-        );
-
-
-        status.textContent =
-          '✓ AIRCRAFT MODEL READY';
-
-      },
-
-
-      undefined,
-
-      function(err) {
-
-        error.textContent =
-          'Aircraft model failed to load.';
-
-        console.error(err);
-
-      }
-
-    );
-
-
-    /*
-      Check AR
+      Check WebXR
     */
 
     async function checkAR(){
@@ -634,7 +273,7 @@
         if(!navigator.xr){
 
           throw new Error(
-            'WebXR is not available.'
+            'navigator.xr is not available.'
           );
 
         }
@@ -649,773 +288,114 @@
         if(!supported){
 
           throw new Error(
-            'Immersive AR is not supported on this device/browser.'
+            'immersive-ar is not supported.'
           );
 
         }
 
 
         status.textContent =
-          '✓ AR READY';
-
-
-        start.disabled =
-          false;
+          '✓ WebXR AR detected. Tap START AR.';
 
 
       }catch(e){
 
         status.textContent =
-          'AR SUPPORT CHECK FAILED';
+          'AR CHECK FAILED';
 
         error.textContent =
           e.message;
 
-        start.disabled =
-          true;
-
       }
 
     }
 
 
     /*
-      Start AR
+      Detect AR session
     */
 
-    start.addEventListener(
-      'click',
-      startAR
+    renderer.xr.addEventListener(
+      'sessionstart',
+      function(){
+
+        status.textContent =
+          '✓ AR SESSION STARTED';
+
+        error.textContent =
+          '';
+
+      }
     );
 
 
-    async function startAR(){
+    /*
+      Detect AR session ending
+    */
 
-      error.textContent =
-        '';
+    renderer.xr.addEventListener(
+      'sessionend',
+      function(){
 
-
-      if(!aircraftTemplate){
-
-        error.textContent =
-          'Please wait for the aircraft model to finish loading.';
-
-        return;
+        status.textContent =
+          'AR session ended.';
 
       }
-
-
-      try{
-
-        status.textContent =
-          'Opening AR...';
-
-
-        xrSession =
-          await navigator.xr.requestSession(
-            'immersive-ar',
-            {
-              requiredFeatures: [
-                'hit-test',
-                'local'
-              ],
-
-              optionalFeatures: [
-                'dom-overlay'
-              ],
-
-              domOverlay: {
-                root: document.body
-              }
-
-            }
-          );
-
-
-        /*
-          Connect WebGL to WebXR
-        */
-
-        renderer.xr.enabled =
-          true;
-
-
-        await renderer.xr.setSession(
-          xrSession
-        );
-
-
-        /*
-          Reference spaces
-        */
-
-        referenceSpace =
-          await xrSession.requestReferenceSpace(
-            'local'
-          );
-
-
-        viewerSpace =
-          await xrSession.requestReferenceSpace(
-            'viewer'
-          );
-
-
-        /*
-          Hit testing
-        */
-
-        hitTestSource =
-          await xrSession.requestHitTestSource({
-            space: viewerSpace
-          });
-
-
-        /*
-          Session events
-        */
-
-        xrSession.addEventListener(
-          'select',
-          placeAircraft
-        );
-
-
-        xrSession.addEventListener(
-          'end',
-          endAR
-        );
-
-
-        /*
-          Interface
-        */
-
-        start.style.display =
-          'none';
-
-
-        controls.style.display =
-          'block';
-
-
-        reticleInfo.style.display =
-          'block';
-
-
-        status.textContent =
-          'AR ACTIVE — scan the floor';
-
-
-        /*
-          XR render loop
-        */
-
-        renderer.setAnimationLoop(
-          renderXR
-        );
-
-
-      }catch(e){
-
-        status.textContent =
-          'AR FAILED';
-
-        error.textContent =
-          e.name + ': ' + e.message;
-
-        console.error(e);
-
-      }
-
-    }
+    );
 
 
     /*
-      Render AR
+      Catch errors
     */
 
-    function renderXR(
-      time,
-      frame
-    ){
+    window.addEventListener(
+      'unhandledrejection',
+      function(event){
 
-      if(!frame){
+        error.textContent =
+          'ERROR: ' +
+          event.reason;
+
+        console.error(
+          event.reason
+        );
+
+      }
+    );
+
+
+    /*
+      Animation loop
+    */
+
+    renderer.setAnimationLoop(
+      function(){
 
         renderer.render(
           scene,
           camera
         );
 
-        return;
-
-      }
-
-
-      const session =
-        renderer.xr.getSession();
-
-
-      if(
-        hitTestSource &&
-        referenceSpace
-      ){
-
-        const results =
-          frame.getHitTestResults(
-            hitTestSource
-          );
-
-
-        if(results.length > 0){
-
-          const hit =
-            results[0];
-
-
-          const pose =
-            hit.getPose(
-              referenceSpace
-            );
-
-
-          if(pose){
-
-            reticle.visible =
-              true;
-
-
-            reticle.matrix.fromArray(
-              pose.transform.matrix
-            );
-
-          }
-
-        }else{
-
-          reticle.visible =
-            false;
-
-        }
-
-      }
-
-
-      renderer.render(
-        scene,
-        camera
-      );
-
-    }
-
-
-    /*
-      Place aircraft
-    */
-
-    function placeAircraft(){
-
-      if(!reticle.visible){
-
-        status.textContent =
-          'Move the phone until the floor is detected.';
-
-        return;
-
-      }
-
-
-      if(
-        !aircraftTemplate
-      ){
-
-        return;
-
-      }
-
-
-      /*
-        Remove old aircraft
-        if this aircraft was already placed.
-      */
-
-      if(
-        aircraftObjects[placingAircraft]
-      ){
-
-        scene.remove(
-          aircraftObjects[placingAircraft]
-        );
-
-      }
-
-
-      /*
-        Clone temporary aircraft
-      */
-
-      const aircraft =
-        aircraftTemplate.clone(true);
-
-
-      /*
-        Put aircraft at reticle
-      */
-
-      aircraft.matrix.copy(
-        reticle.matrix
-      );
-
-
-      aircraft.matrixAutoUpdate =
-        false;
-
-
-      /*
-        Scale
-
-        1.0 is the temporary model scale.
-
-        We will calibrate this to the
-        actual aircraft dimensions later.
-      */
-
-      aircraft.scale.set(
-        1,
-        1,
-        1
-      );
-
-
-      aircraft.matrixAutoUpdate =
-        true;
-
-
-      /*
-        Add to scene
-      */
-
-      scene.add(
-        aircraft
-      );
-
-
-      aircraftObjects[
-        placingAircraft
-      ] =
-        aircraft;
-
-
-      selectedAircraft =
-        placingAircraft;
-
-
-      updateSelectedText();
-
-
-      /*
-        Next aircraft
-      */
-
-      if(
-        placingAircraft < 2
-      ){
-
-        placingAircraft++;
-
-        status.textContent =
-          '✓ Aircraft placed — select the next aircraft.';
-
-      }else{
-
-        status.textContent =
-          '✓ THREE AIRCRAFT PLACED';
-
-      }
-
-    }
-
-
-    /*
-      Select aircraft 1
-    */
-
-    aircraft1.addEventListener(
-      'click',
-      function(){
-
-        placingAircraft =
-          0;
-
-        selectedAircraft =
-          0;
-
-        updateSelectedText();
-
-        status.textContent =
-          'Aircraft 1 selected — tap the floor to place it.';
-
       }
     );
 
 
     /*
-      Select aircraft 2
-    */
-
-    aircraft2.addEventListener(
-      'click',
-      function(){
-
-        placingAircraft =
-          1;
-
-        selectedAircraft =
-          1;
-
-        updateSelectedText();
-
-        status.textContent =
-          'Aircraft 2 selected — tap the floor to place it.';
-
-      }
-    );
-
-
-    /*
-      Select aircraft 3
-    */
-
-    aircraft3.addEventListener(
-      'click',
-      function(){
-
-        placingAircraft =
-          2;
-
-        selectedAircraft =
-          2;
-
-        updateSelectedText();
-
-        status.textContent =
-          'Aircraft 3 selected — tap the floor to place it.';
-
-      }
-    );
-
-
-    /*
-      Update selected text
-    */
-
-    function updateSelectedText(){
-
-      selectedText.textContent =
-        'Selected: Aircraft ' +
-        (selectedAircraft + 1);
-
-    }
-
-
-    /*
-      Get selected aircraft
-    */
-
-    function getSelectedAircraft(){
-
-      return aircraftObjects[
-        selectedAircraft
-      ];
-
-    }
-
-
-    /*
-      Rotate left
-    */
-
-    rotateLeft.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        const aircraft =
-          getSelectedAircraft();
-
-
-        if(!aircraft){
-
-          status.textContent =
-            'Place an aircraft first.';
-
-          return;
-
-        }
-
-
-        aircraft.rotation.y -=
-          THREE.MathUtils.degToRad(15);
-
-      }
-    );
-
-
-    /*
-      Rotate right
-    */
-
-    rotateRight.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        const aircraft =
-          getSelectedAircraft();
-
-
-        if(!aircraft){
-
-          status.textContent =
-            'Place an aircraft first.';
-
-          return;
-
-        }
-
-
-        aircraft.rotation.y +=
-          THREE.MathUtils.degToRad(15);
-
-      }
-    );
-
-
-    /*
-      Smaller
-    */
-
-    smaller.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        const aircraft =
-          getSelectedAircraft();
-
-
-        if(!aircraft){
-
-          status.textContent =
-            'Place an aircraft first.';
-
-          return;
-
-        }
-
-
-        aircraft.scale.multiplyScalar(
-          0.9
-        );
-
-      }
-    );
-
-
-    /*
-      Larger
-    */
-
-    larger.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        const aircraft =
-          getSelectedAircraft();
-
-
-        if(!aircraft){
-
-          status.textContent =
-            'Place an aircraft first.';
-
-          return;
-
-        }
-
-
-        aircraft.scale.multiplyScalar(
-          1.1
-        );
-
-      }
-    );
-
-
-    /*
-      Reset selected aircraft
-    */
-
-    reset.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        const aircraft =
-          getSelectedAircraft();
-
-
-        if(!aircraft){
-
-          status.textContent =
-            'Place an aircraft first.';
-
-          return;
-
-        }
-
-
-        aircraft.rotation.set(
-          0,
-          0,
-          0
-        );
-
-
-        aircraft.scale.set(
-          1,
-          1,
-          1
-        );
-
-
-        status.textContent =
-          '✓ Selected aircraft reset.';
-
-      }
-    );
-
-
-    /*
-      Photo mode
-    */
-
-    photoMode.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        menu.style.display =
-          'none';
-
-
-        reticleInfo.style.display =
-          'none';
-
-
-        photoExit.style.display =
-          'block';
-
-      }
-    );
-
-
-    /*
-      Exit photo mode
-    */
-
-    photoExit.addEventListener(
-      'click',
-      function(e){
-
-        e.stopPropagation();
-
-        menu.style.display =
-          'block';
-
-
-        reticleInfo.style.display =
-          'block';
-
-
-        photoExit.style.display =
-          'none';
-
-      }
-    );
-
-
-    /*
-      End AR
-    */
-
-    function endAR(){
-
-      xrSession =
-        null;
-
-
-      hitTestSource =
-        null;
-
-
-      referenceSpace =
-        null;
-
-
-      viewerSpace =
-        null;
-
-
-      renderer.setAnimationLoop(
-        null
-      );
-
-
-      reticle.visible =
-        false;
-
-
-      controls.style.display =
-        'none';
-
-
-      start.style.display =
-        'inline-block';
-
-
-      reticleInfo.style.display =
-        'none';
-
-
-      photoExit.style.display =
-        'none';
-
-
-      menu.style.display =
-        'block';
-
-
-      status.textContent =
-        'AR ended. Ready to start again.';
-
-    }
-
-
-    /*
-      Window resize
+      Resize
     */
 
     window.addEventListener(
       'resize',
       function(){
+
+        if(
+          renderer.xr.isPresenting
+        ){
+
+          return;
+
+        }
+
 
         camera.aspect =
           window.innerWidth /
@@ -1434,13 +414,10 @@
     );
 
 
-    /*
-      Start support check
-    */
-
     checkAR();
 
   </script>
+
 
 </body>
 
