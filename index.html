@@ -3,68 +3,203 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>RSAF AR - Camera Test</title>
+
+  <title>RSAF AR - Stage 2</title>
+
   <style>
     *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,sans-serif;color:#fff}
-    #camera{width:100%;height:100%;object-fit:cover;background:#000}
+
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#000;
+      font-family:Arial,sans-serif;
+      color:#fff
+    }
+
+    #camera{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#000;
+      z-index:1
+    }
+
+    #model{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:2;
+      pointer-events:none;
+      display:none;
+    }
+
     #panel{
-      position:fixed;z-index:10;left:16px;right:16px;bottom:20px;
-      padding:18px;background:rgba(8,21,34,.88);border-radius:16px;text-align:center
+      position:fixed;
+      z-index:10;
+      left:16px;
+      right:16px;
+      bottom:20px;
+      padding:18px;
+      background:rgba(8,21,34,.88);
+      border-radius:16px;
+      text-align:center
     }
-    h2{margin:0 0 8px}
-    p{margin:8px 0;color:#d8e4ec}
+
+    h2{
+      margin:0 0 8px
+    }
+
+    p{
+      margin:8px 0;
+      color:#d8e4ec
+    }
+
     button{
-      margin-top:8px;padding:14px 24px;border:0;border-radius:12px;
-      font-size:17px;font-weight:700
+      margin-top:8px;
+      padding:14px 24px;
+      border:0;
+      border-radius:12px;
+      font-size:17px;
+      font-weight:700
     }
-    #error{color:#ffb4b4}
+
+    #error{
+      color:#ffb4b4
+    }
+
+    #instructions{
+      font-size:14px;
+      color:#b9d0df;
+    }
   </style>
 </head>
+
 <body>
+
+  <!-- PHONE CAMERA -->
   <video id="camera" autoplay playsinline muted></video>
 
+  <!-- 3D AIRCRAFT -->
+  <model-viewer
+    id="model"
+    src="https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb"
+    camera-controls
+    auto-rotate
+    shadow-intensity="1"
+    exposure="1"
+    interaction-prompt="none">
+  </model-viewer>
+
+  <!-- CONTROL PANEL -->
   <div id="panel">
+
     <h2>RSAF AR — Stage 2</h2>
-    <p id="status">Press START CAMERA.</p>
-    <button id="start">START CAMERA</button>
+
+    <p id="status">
+      Press START CAMERA.
+    </p>
+
+    <button id="start">
+      START CAMERA
+    </button>
+
+    <p id="instructions">
+      Camera test → aircraft model
+    </p>
+
     <p id="error"></p>
+
   </div>
 
-<script>
-const video = document.getElementById('camera');
-const status = document.getElementById('status');
-const error = document.getElementById('error');
-const button = document.getElementById('start');
+  <!-- MODEL-VIEWER -->
+  <script
+    type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+  </script>
 
-button.addEventListener('click', async () => {
-  error.textContent = '';
-  status.textContent = 'Requesting camera permission...';
+  <script>
 
-  try {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Camera API is not available in this browser.');
-    }
+    const video = document.getElementById('camera');
+    const status = document.getElementById('status');
+    const error = document.getElementById('error');
+    const button = document.getElementById('start');
+    const model = document.getElementById('model');
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: 'environment' },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      },
-      audio: false
+    button.addEventListener('click', async () => {
+
+      error.textContent = '';
+      status.textContent = 'Requesting camera permission...';
+
+      try {
+
+        if (!navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia) {
+
+          throw new Error(
+            'Camera API is not available in this browser.'
+          );
+
+        }
+
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+
+            video: {
+              facingMode: { ideal: 'environment' },
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
+            },
+
+            audio: false
+          });
+
+        video.srcObject = stream;
+
+        await video.play();
+
+        status.textContent =
+          '✓ REAR CAMERA WORKING — AIRCRAFT LOADING';
+
+        button.style.display = 'none';
+
+        model.style.display = 'block';
+
+      } catch (e) {
+
+        status.textContent =
+          'CAMERA TEST FAILED';
+
+        error.textContent =
+          e.name + ': ' + e.message;
+
+      }
+
     });
 
-    video.srcObject = stream;
-    await video.play();
+    model.addEventListener('load', () => {
 
-    status.textContent = '✓ REAR CAMERA WORKING';
-    button.style.display = 'none';
-  } catch (e) {
-    status.textContent = 'CAMERA TEST FAILED';
-    error.textContent = e.name + ': ' + e.message;
-  }
-});
-</script>
+      status.textContent =
+        '✓ CAMERA + 3D AIRCRAFT WORKING';
+
+      document.getElementById('instructions').textContent =
+        'Drag the aircraft to rotate • Pinch to zoom';
+
+    });
+
+    model.addEventListener('error', () => {
+
+      error.textContent =
+        'The aircraft model could not be loaded.';
+
+    });
+
+  </script>
+
 </body>
 </html>
