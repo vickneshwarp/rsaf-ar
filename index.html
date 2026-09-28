@@ -1,182 +1,354 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <title>RSAF AR - Stage 4</title>
+<head>
+
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+  <title>RSAF AR - Stage 5</title>
 
   <style>
-    *{
-      box-sizing:border-box
+
+    * {
+      box-sizing: border-box;
     }
 
-    html,body{
-      margin:0;
-      width:100%;
-      height:100%;
-      overflow:hidden;
-      background:#000;
-      font-family:Arial,sans-serif;
-      color:#fff
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+      color: white;
     }
 
-    model-viewer{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      background:transparent
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
-    #panel{
-      position:fixed;
-      z-index:20;
-      left:14px;
-      right:14px;
-      bottom:14px;
-      padding:16px;
-      background:rgba(8,21,34,.92);
-      border-radius:18px;
-      text-align:center
+    #menu {
+
+      position: fixed;
+
+      z-index: 20;
+
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+
+      padding: 14px;
+
+      background: rgba(8, 21, 34, 0.94);
+
+      border-radius: 18px;
+
+      text-align: center;
     }
 
-    h2{
-      margin:0 0 6px;
-      font-size:20px
+    h2 {
+
+      margin: 0 0 6px;
+
+      font-size: 20px;
     }
 
-    p{
-      margin:7px 0;
-      color:#d8e4ec;
-      font-size:14px
+    #status {
+
+      margin: 6px 0 10px;
+
+      font-size: 14px;
+
+      color: #d8e4ec;
     }
 
-    button{
-      margin:4px;
-      padding:12px 16px;
-      border:0;
-      border-radius:10px;
-      font-size:15px;
-      font-weight:700
+    button {
+
+      margin: 4px;
+
+      padding: 11px 14px;
+
+      border: 0;
+
+      border-radius: 10px;
+
+      font-size: 14px;
+
+      font-weight: bold;
+
+      background: white;
+
+      color: #071522;
     }
 
-    #start{
-      font-size:17px;
-      padding:14px 25px
+    button:disabled {
+
+      opacity: 0.4;
     }
 
-    #controls{
-      display:none;
-      margin-top:8px
+    #start {
+
+      font-size: 17px;
+
+      padding: 14px 24px;
     }
 
-    #photoMode{
-      display:none;
-      width:100%;
-      margin-top:8px
+    #controls {
+
+      display: none;
     }
 
-    #error{
-      color:#ffb4b4;
-      font-size:13px
+    #aircraftButtons {
+
+      margin-bottom: 5px;
     }
 
-    #scaleValue{
-      font-weight:bold
+    #selected {
+
+      margin: 5px 0;
+
+      font-size: 13px;
+
+      color: #8fd3ff;
     }
+
+    #photoExit {
+
+      display: none;
+
+      position: fixed;
+
+      z-index: 30;
+
+      top: 14px;
+
+      right: 14px;
+
+      padding: 10px 14px;
+
+      border-radius: 10px;
+
+      background: rgba(8,21,34,.9);
+
+      color: white;
+
+      border: 1px solid rgba(255,255,255,.3);
+    }
+
+    #error {
+
+      color: #ffb4b4;
+
+      font-size: 13px;
+
+      margin-top: 6px;
+    }
+
+    #reticleInfo {
+
+      display: none;
+
+      position: fixed;
+
+      z-index: 10;
+
+      top: 14px;
+
+      left: 50%;
+
+      transform: translateX(-50%);
+
+      padding: 9px 14px;
+
+      border-radius: 12px;
+
+      background: rgba(8,21,34,.85);
+
+      font-size: 13px;
+
+      text-align: center;
+    }
+
   </style>
 
-  <script
-    type="module"
-    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
-  </script>
 </head>
+
 
 <body>
 
-  <model-viewer
-    id="aircraft"
 
-    src="https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb"
+  <div id="reticleInfo">
 
-    alt="Temporary aircraft"
-
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-
-    ar-placement="floor"
-
-    camera-controls
-
-    shadow-intensity="1"
-    shadow-softness="0.8"
-    exposure="1"
-
-    environment-image="neutral"
-
-    interaction-prompt="none">
-  </model-viewer>
-
-
-  <div id="panel">
-
-    <h2>RSAF AR — Stage 4</h2>
-
-    <p id="status">
-      Checking AR support...
-    </p>
-
-    <button id="start">
-      START AR
-    </button>
-
-    <div id="controls">
-
-      <button id="rotateLeft">
-        ↶ ROTATE
-      </button>
-
-      <button id="rotateRight">
-        ROTATE ↷
-      </button>
-
-      <br>
-
-      <button id="smaller">
-        − SMALLER
-      </button>
-
-      <span id="scaleValue">
-        100%
-      </span>
-
-      <button id="larger">
-        LARGER +
-      </button>
-
-      <br>
-
-      <button id="reset">
-        RESET
-      </button>
-
-      <button id="photoMode">
-        📸 PHOTO MODE
-      </button>
-
-    </div>
-
-    <p id="error"></p>
+    Move the phone until the floor is detected.<br>
+    Then tap the screen to place the aircraft.
 
   </div>
 
 
-  <script>
+  <button id="photoExit">
 
-    const aircraft =
-      document.getElementById('aircraft');
+    EXIT PHOTO MODE
+
+  </button>
+
+
+  <div id="menu">
+
+    <h2>
+
+      RSAF AR — Stage 5
+
+    </h2>
+
+
+    <div id="status">
+
+      Checking AR support...
+
+    </div>
+
+
+    <button id="start">
+
+      START AR
+
+    </button>
+
+
+    <div id="controls">
+
+
+      <div id="aircraftButtons">
+
+        <button id="aircraft1">
+
+          PLACE AIRCRAFT 1
+
+        </button>
+
+        <button id="aircraft2">
+
+          PLACE AIRCRAFT 2
+
+        </button>
+
+        <button id="aircraft3">
+
+          PLACE AIRCRAFT 3
+
+        </button>
+
+      </div>
+
+
+      <div id="selected">
+
+        Selected: Aircraft 1
+
+      </div>
+
+
+      <div>
+
+        <button id="rotateLeft">
+
+          ↶ ROTATE
+
+        </button>
+
+        <button id="rotateRight">
+
+          ROTATE ↷
+
+        </button>
+
+      </div>
+
+
+      <div>
+
+        <button id="smaller">
+
+          − SMALLER
+
+        </button>
+
+        <button id="larger">
+
+          LARGER +
+
+        </button>
+
+      </div>
+
+
+      <div>
+
+        <button id="reset">
+
+          RESET SELECTED
+
+        </button>
+
+        <button id="photoMode">
+
+          📸 PHOTO MODE
+
+        </button>
+
+      </div>
+
+
+    </div>
+
+
+    <div id="error"></div>
+
+  </div>
+
+
+  <script type="module">
+
+
+    import * as THREE from
+      'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+
+
+    import { GLTFLoader } from
+      'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
+
+
+    /*
+      Temporary aircraft model
+
+      Later we will replace this with
+      the actual RSAF aircraft models.
+    */
+
+    const MODEL_URL =
+      'https://raw.githubusercontent.com/amvlab/aircraft-models/main/models/A320.glb';
+
+
+    /*
+      HTML elements
+    */
+
+    const start =
+      document.getElementById('start');
+
+    const menu =
+      document.getElementById('menu');
+
+    const controls =
+      document.getElementById('controls');
 
     const status =
       document.getElementById('status');
@@ -184,17 +356,25 @@
     const error =
       document.getElementById('error');
 
-    const start =
-      document.getElementById('start');
+    const selectedText =
+      document.getElementById('selected');
 
-    const controls =
-      document.getElementById('controls');
+    const reticleInfo =
+      document.getElementById('reticleInfo');
 
-    const panel =
-      document.getElementById('panel');
+    const photoExit =
+      document.getElementById('photoExit');
 
-    const scaleValue =
-      document.getElementById('scaleValue');
+
+    const aircraft1 =
+      document.getElementById('aircraft1');
+
+    const aircraft2 =
+      document.getElementById('aircraft2');
+
+    const aircraft3 =
+      document.getElementById('aircraft3');
+
 
     const rotateLeft =
       document.getElementById('rotateLeft');
@@ -215,13 +395,236 @@
       document.getElementById('photoMode');
 
 
-    let scale = 1.0;
+    /*
+      THREE.JS
+    */
 
-    let rotation = 0;
+    const scene =
+      new THREE.Scene();
+
+
+    const camera =
+      new THREE.PerspectiveCamera(
+        70,
+        window.innerWidth / window.innerHeight,
+        0.01,
+        100
+      );
+
+
+    const renderer =
+      new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true
+      });
+
+
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, 2)
+    );
+
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+
+    renderer.outputColorSpace =
+      THREE.SRGBColorSpace;
+
+
+    renderer.shadowMap.enabled =
+      true;
+
+
+    document.body.appendChild(
+      renderer.domElement
+    );
 
 
     /*
-      Check AR support
+      Lights
+    */
+
+    const ambientLight =
+      new THREE.HemisphereLight(
+        0xffffff,
+        0x444444,
+        3
+      );
+
+
+    scene.add(
+      ambientLight
+    );
+
+
+    const directionalLight =
+      new THREE.DirectionalLight(
+        0xffffff,
+        3
+      );
+
+
+    directionalLight.position.set(
+      5,
+      10,
+      5
+    );
+
+
+    directionalLight.castShadow =
+      true;
+
+
+    scene.add(
+      directionalLight
+    );
+
+
+    /*
+      AR variables
+    */
+
+    let xrSession = null;
+
+    let referenceSpace = null;
+
+    let viewerSpace = null;
+
+    let hitTestSource = null;
+
+
+    /*
+      Reticle
+
+      Shows where the aircraft
+      will be placed.
+    */
+
+    const reticle =
+      new THREE.Mesh(
+
+        new THREE.RingGeometry(
+          0.15,
+          0.2,
+          32
+        ),
+
+        new THREE.MeshBasicMaterial({
+          color: 0xffffff
+        })
+
+      );
+
+
+    reticle.rotation.x =
+      -Math.PI / 2;
+
+
+    reticle.matrixAutoUpdate =
+      false;
+
+
+    reticle.visible =
+      false;
+
+
+    scene.add(
+      reticle
+    );
+
+
+    /*
+      Aircraft storage
+    */
+
+    const aircraftObjects = [
+      null,
+      null,
+      null
+    ];
+
+
+    let selectedAircraft =
+      0;
+
+
+    let placingAircraft =
+      0;
+
+
+    let aircraftTemplate =
+      null;
+
+
+    /*
+      Load aircraft
+    */
+
+    const loader =
+      new GLTFLoader();
+
+
+    status.textContent =
+      'Loading temporary aircraft...';
+
+
+    loader.load(
+
+      MODEL_URL,
+
+      function(gltf) {
+
+        aircraftTemplate =
+          gltf.scene;
+
+
+        /*
+          Prepare model
+        */
+
+        aircraftTemplate.traverse(
+          function(object) {
+
+            if(object.isMesh){
+
+              object.castShadow =
+                true;
+
+              object.receiveShadow =
+                true;
+
+            }
+
+          }
+        );
+
+
+        status.textContent =
+          '✓ AIRCRAFT MODEL READY';
+
+      },
+
+
+      undefined,
+
+      function(err) {
+
+        error.textContent =
+          'Aircraft model failed to load.';
+
+        console.error(err);
+
+      }
+
+    );
+
+
+    /*
+      Check AR
     */
 
     async function checkAR(){
@@ -236,21 +639,29 @@
 
         }
 
+
         const supported =
           await navigator.xr.isSessionSupported(
             'immersive-ar'
           );
 
+
         if(!supported){
 
           throw new Error(
-            'Immersive AR is not supported.'
+            'Immersive AR is not supported on this device/browser.'
           );
 
         }
 
+
         status.textContent =
           '✓ AR READY';
+
+
+        start.disabled =
+          false;
+
 
       }catch(e){
 
@@ -259,6 +670,9 @@
 
         error.textContent =
           e.message;
+
+        start.disabled =
+          true;
 
       }
 
@@ -269,28 +683,138 @@
       Start AR
     */
 
-    start.addEventListener('click', async ()=>{
+    start.addEventListener(
+      'click',
+      startAR
+    );
 
-      error.textContent = '';
 
-      status.textContent =
-        'Opening AR...';
+    async function startAR(){
+
+      error.textContent =
+        '';
+
+
+      if(!aircraftTemplate){
+
+        error.textContent =
+          'Please wait for the aircraft model to finish loading.';
+
+        return;
+
+      }
+
 
       try{
 
-        await aircraft.activateAR();
-
         status.textContent =
-          '✓ AIRCRAFT PLACED';
+          'Opening AR...';
+
+
+        xrSession =
+          await navigator.xr.requestSession(
+            'immersive-ar',
+            {
+              requiredFeatures: [
+                'hit-test',
+                'local'
+              ],
+
+              optionalFeatures: [
+                'dom-overlay'
+              ],
+
+              domOverlay: {
+                root: document.body
+              }
+
+            }
+          );
+
+
+        /*
+          Connect WebGL to WebXR
+        */
+
+        renderer.xr.enabled =
+          true;
+
+
+        await renderer.xr.setSession(
+          xrSession
+        );
+
+
+        /*
+          Reference spaces
+        */
+
+        referenceSpace =
+          await xrSession.requestReferenceSpace(
+            'local'
+          );
+
+
+        viewerSpace =
+          await xrSession.requestReferenceSpace(
+            'viewer'
+          );
+
+
+        /*
+          Hit testing
+        */
+
+        hitTestSource =
+          await xrSession.requestHitTestSource({
+            space: viewerSpace
+          });
+
+
+        /*
+          Session events
+        */
+
+        xrSession.addEventListener(
+          'select',
+          placeAircraft
+        );
+
+
+        xrSession.addEventListener(
+          'end',
+          endAR
+        );
+
+
+        /*
+          Interface
+        */
 
         start.style.display =
           'none';
 
+
         controls.style.display =
           'block';
 
-        photoMode.style.display =
+
+        reticleInfo.style.display =
           'block';
+
+
+        status.textContent =
+          'AR ACTIVE — scan the floor';
+
+
+        /*
+          XR render loop
+        */
+
+        renderer.setAnimationLoop(
+          renderXR
+        );
+
 
       }catch(e){
 
@@ -300,165 +824,624 @@
         error.textContent =
           e.name + ': ' + e.message;
 
+        console.error(e);
+
       }
 
-    });
+    }
+
+
+    /*
+      Render AR
+    */
+
+    function renderXR(
+      time,
+      frame
+    ){
+
+      if(!frame){
+
+        renderer.render(
+          scene,
+          camera
+        );
+
+        return;
+
+      }
+
+
+      const session =
+        renderer.xr.getSession();
+
+
+      if(
+        hitTestSource &&
+        referenceSpace
+      ){
+
+        const results =
+          frame.getHitTestResults(
+            hitTestSource
+          );
+
+
+        if(results.length > 0){
+
+          const hit =
+            results[0];
+
+
+          const pose =
+            hit.getPose(
+              referenceSpace
+            );
+
+
+          if(pose){
+
+            reticle.visible =
+              true;
+
+
+            reticle.matrix.fromArray(
+              pose.transform.matrix
+            );
+
+          }
+
+        }else{
+
+          reticle.visible =
+            false;
+
+        }
+
+      }
+
+
+      renderer.render(
+        scene,
+        camera
+      );
+
+    }
+
+
+    /*
+      Place aircraft
+    */
+
+    function placeAircraft(){
+
+      if(!reticle.visible){
+
+        status.textContent =
+          'Move the phone until the floor is detected.';
+
+        return;
+
+      }
+
+
+      if(
+        !aircraftTemplate
+      ){
+
+        return;
+
+      }
+
+
+      /*
+        Remove old aircraft
+        if this aircraft was already placed.
+      */
+
+      if(
+        aircraftObjects[placingAircraft]
+      ){
+
+        scene.remove(
+          aircraftObjects[placingAircraft]
+        );
+
+      }
+
+
+      /*
+        Clone temporary aircraft
+      */
+
+      const aircraft =
+        aircraftTemplate.clone(true);
+
+
+      /*
+        Put aircraft at reticle
+      */
+
+      aircraft.matrix.copy(
+        reticle.matrix
+      );
+
+
+      aircraft.matrixAutoUpdate =
+        false;
+
+
+      /*
+        Scale
+
+        1.0 is the temporary model scale.
+
+        We will calibrate this to the
+        actual aircraft dimensions later.
+      */
+
+      aircraft.scale.set(
+        1,
+        1,
+        1
+      );
+
+
+      aircraft.matrixAutoUpdate =
+        true;
+
+
+      /*
+        Add to scene
+      */
+
+      scene.add(
+        aircraft
+      );
+
+
+      aircraftObjects[
+        placingAircraft
+      ] =
+        aircraft;
+
+
+      selectedAircraft =
+        placingAircraft;
+
+
+      updateSelectedText();
+
+
+      /*
+        Next aircraft
+      */
+
+      if(
+        placingAircraft < 2
+      ){
+
+        placingAircraft++;
+
+        status.textContent =
+          '✓ Aircraft placed — select the next aircraft.';
+
+      }else{
+
+        status.textContent =
+          '✓ THREE AIRCRAFT PLACED';
+
+      }
+
+    }
+
+
+    /*
+      Select aircraft 1
+    */
+
+    aircraft1.addEventListener(
+      'click',
+      function(){
+
+        placingAircraft =
+          0;
+
+        selectedAircraft =
+          0;
+
+        updateSelectedText();
+
+        status.textContent =
+          'Aircraft 1 selected — tap the floor to place it.';
+
+      }
+    );
+
+
+    /*
+      Select aircraft 2
+    */
+
+    aircraft2.addEventListener(
+      'click',
+      function(){
+
+        placingAircraft =
+          1;
+
+        selectedAircraft =
+          1;
+
+        updateSelectedText();
+
+        status.textContent =
+          'Aircraft 2 selected — tap the floor to place it.';
+
+      }
+    );
+
+
+    /*
+      Select aircraft 3
+    */
+
+    aircraft3.addEventListener(
+      'click',
+      function(){
+
+        placingAircraft =
+          2;
+
+        selectedAircraft =
+          2;
+
+        updateSelectedText();
+
+        status.textContent =
+          'Aircraft 3 selected — tap the floor to place it.';
+
+      }
+    );
+
+
+    /*
+      Update selected text
+    */
+
+    function updateSelectedText(){
+
+      selectedText.textContent =
+        'Selected: Aircraft ' +
+        (selectedAircraft + 1);
+
+    }
+
+
+    /*
+      Get selected aircraft
+    */
+
+    function getSelectedAircraft(){
+
+      return aircraftObjects[
+        selectedAircraft
+      ];
+
+    }
 
 
     /*
       Rotate left
     */
 
-    rotateLeft.addEventListener('click', ()=>{
+    rotateLeft.addEventListener(
+      'click',
+      function(e){
 
-      rotation -= 15;
+        e.stopPropagation();
 
-      aircraft.orientation =
-        `0deg ${rotation}deg 0deg`;
+        const aircraft =
+          getSelectedAircraft();
 
-    });
+
+        if(!aircraft){
+
+          status.textContent =
+            'Place an aircraft first.';
+
+          return;
+
+        }
+
+
+        aircraft.rotation.y -=
+          THREE.MathUtils.degToRad(15);
+
+      }
+    );
 
 
     /*
       Rotate right
     */
 
-    rotateRight.addEventListener('click', ()=>{
+    rotateRight.addEventListener(
+      'click',
+      function(e){
 
-      rotation += 15;
+        e.stopPropagation();
 
-      aircraft.orientation =
-        `0deg ${rotation}deg 0deg`;
-
-    });
+        const aircraft =
+          getSelectedAircraft();
 
 
-    /*
-      Make smaller
-    */
+        if(!aircraft){
 
-    smaller.addEventListener('click', ()=>{
+          status.textContent =
+            'Place an aircraft first.';
 
-      scale -= 0.1;
+          return;
 
-      if(scale < 0.2){
-        scale = 0.2;
+        }
+
+
+        aircraft.rotation.y +=
+          THREE.MathUtils.degToRad(15);
+
       }
-
-      updateScale();
-
-    });
+    );
 
 
     /*
-      Make larger
+      Smaller
     */
 
-    larger.addEventListener('click', ()=>{
+    smaller.addEventListener(
+      'click',
+      function(e){
 
-      scale += 0.1;
+        e.stopPropagation();
 
-      if(scale > 3){
-        scale = 3;
+        const aircraft =
+          getSelectedAircraft();
+
+
+        if(!aircraft){
+
+          status.textContent =
+            'Place an aircraft first.';
+
+          return;
+
+        }
+
+
+        aircraft.scale.multiplyScalar(
+          0.9
+        );
+
       }
-
-      updateScale();
-
-    });
+    );
 
 
     /*
-      Apply scale
+      Larger
     */
 
-    function updateScale(){
+    larger.addEventListener(
+      'click',
+      function(e){
 
-      const percent =
-        Math.round(scale * 100);
+        e.stopPropagation();
 
-      scaleValue.textContent =
-        percent + '%';
+        const aircraft =
+          getSelectedAircraft();
 
-      aircraft.scale =
-        `${scale} ${scale} ${scale}`;
 
-    }
+        if(!aircraft){
+
+          status.textContent =
+            'Place an aircraft first.';
+
+          return;
+
+        }
+
+
+        aircraft.scale.multiplyScalar(
+          1.1
+        );
+
+      }
+    );
 
 
     /*
-      Reset
+      Reset selected aircraft
     */
 
-    reset.addEventListener('click', ()=>{
+    reset.addEventListener(
+      'click',
+      function(e){
 
-      scale = 1.0;
+        e.stopPropagation();
 
-      rotation = 0;
+        const aircraft =
+          getSelectedAircraft();
 
-      updateScale();
 
-      aircraft.orientation =
-        '0deg 0deg 0deg';
+        if(!aircraft){
 
-      status.textContent =
-        '✓ RESET — READY';
+          status.textContent =
+            'Place an aircraft first.';
 
-    });
+          return;
+
+        }
+
+
+        aircraft.rotation.set(
+          0,
+          0,
+          0
+        );
+
+
+        aircraft.scale.set(
+          1,
+          1,
+          1
+        );
+
+
+        status.textContent =
+          '✓ Selected aircraft reset.';
+
+      }
+    );
 
 
     /*
       Photo mode
     */
 
-    photoMode.addEventListener('click', ()=>{
+    photoMode.addEventListener(
+      'click',
+      function(e){
 
-      if(panel.style.display === 'none'){
+        e.stopPropagation();
 
-        panel.style.display =
+        menu.style.display =
+          'none';
+
+
+        reticleInfo.style.display =
+          'none';
+
+
+        photoExit.style.display =
           'block';
 
-        photoMode.textContent =
-          '📸 PHOTO MODE';
+      }
+    );
 
-      }else{
 
-        panel.style.display =
+    /*
+      Exit photo mode
+    */
+
+    photoExit.addEventListener(
+      'click',
+      function(e){
+
+        e.stopPropagation();
+
+        menu.style.display =
+          'block';
+
+
+        reticleInfo.style.display =
+          'block';
+
+
+        photoExit.style.display =
           'none';
 
       }
-
-    });
+    );
 
 
     /*
-      Aircraft loaded
+      End AR
     */
 
-    aircraft.addEventListener('load', ()=>{
+    function endAR(){
 
-      updateScale();
+      xrSession =
+        null;
+
+
+      hitTestSource =
+        null;
+
+
+      referenceSpace =
+        null;
+
+
+      viewerSpace =
+        null;
+
+
+      renderer.setAnimationLoop(
+        null
+      );
+
+
+      reticle.visible =
+        false;
+
+
+      controls.style.display =
+        'none';
+
+
+      start.style.display =
+        'inline-block';
+
+
+      reticleInfo.style.display =
+        'none';
+
+
+      photoExit.style.display =
+        'none';
+
+
+      menu.style.display =
+        'block';
+
 
       status.textContent =
-        '✓ AIRCRAFT MODEL READY';
+        'AR ended. Ready to start again.';
 
-    });
+    }
 
 
     /*
-      Aircraft loading error
+      Window resize
     */
 
-    aircraft.addEventListener('error', ()=>{
+    window.addEventListener(
+      'resize',
+      function(){
 
-      error.textContent =
-        'Aircraft model could not be loaded.';
+        camera.aspect =
+          window.innerWidth /
+          window.innerHeight;
 
-    });
 
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
+
+      }
+    );
+
+
+    /*
+      Start support check
+    */
 
     checkAR();
 
   </script>
 
 </body>
+
 </html>
